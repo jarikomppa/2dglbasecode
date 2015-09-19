@@ -1,0 +1,7 @@
+*.opensdf
+font/
+Release/
+Debug/
+*.filters
+*.sdf
+psd/
