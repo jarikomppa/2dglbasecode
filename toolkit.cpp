@@ -89,7 +89,7 @@ void render_perfcounters(int tex_font)
     perf_idx %= PERF_FRAMES;
     if (tex_font) 
 	{
-		quickfont_drawstring(tex_font, perf_temp, 16, gScreenHeight - 32, 0xffffffff, 1);
+		quickfont_drawstring(tex_font, perf_temp, 16, gScreenHeight - 32, 0xffffffff, 8);
 	}
 
     int perf_i;
@@ -576,6 +576,7 @@ void drawtexturedrect(int tex, float x, float y, float w, float h, int color)
 
 void quickfont_drawchar(int ch, float x, float y, float w, float h)
 {
+	ch = (unsigned char)ch;
     // font = 16 rows, 16 chars per row
     float uofs = (ch & 15) * (1.0f / 16.0f) + 1 / 1024.0f;
     float vofs = (ch / 16) * (1.0f / 16.0f) + 1 / 1024.0f;
@@ -605,9 +606,9 @@ void quickfont_drawstring(int tex, char * string, float x, float y, int color,  
 	glBegin(GL_TRIANGLE_STRIP);
 	while (*string)
     {
-        quickfont_drawchar(*string, x, y, 8 * size, 8 * size);
+        quickfont_drawchar(*string, x, y, size, size);
         string++;
-        x += 8 * size;
+        x += size;
     }
 	glEnd();
 	glDisable(GL_TEXTURE_2D);

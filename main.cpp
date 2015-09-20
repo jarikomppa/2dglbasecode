@@ -148,7 +148,7 @@ static void draw_screen_ingame()
 {
     int tick = SDL_GetTicks();
 
-    int i;    
+    int i, j;    
 
     if (tick - gLastTick > TICK_TIMEWARP) 
         gLastTick = tick;
@@ -214,8 +214,16 @@ static void draw_screen_ingame()
 	set2d();
 
     char temp[200];
-    sprintf(temp, "%d %d %d %d", gScreenWidth, gScreenHeight, gUIState.mousex, gUIState.mousey);
-    quickfont_drawstring(tex_font, temp, 50,400,0xffffffff,1);
+    sprintf((char*)temp, "%d %d %d %d", gScreenWidth, gScreenHeight, gUIState.mousex, gUIState.mousey);
+    quickfont_drawstring(tex_font, temp, 50,400,0xffffffff,16);
+
+	temp[1] = 0;
+	for (i = 0; i < 4; i++)
+		for (j = 0; j < 64; j++)
+		{
+			temp[0] = i * 64 + j;
+			quickfont_drawstring(tex_font, temp, DESIRED_WINDOW_WIDTH - 8 * 64 + j * 8, DESIRED_WINDOW_HEIGHT - 8 * 4 + i * 8);
+		}
 
     imgui_prepare();
 
