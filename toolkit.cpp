@@ -89,7 +89,7 @@ void render_perfcounters(int tex_font)
     perf_idx %= PERF_FRAMES;
     if (tex_font) 
 	{
-		quickfont_drawstring(tex_font, perf_temp, 16, gScreenHeight - 32, 0xffffff, 1, 1);
+		quickfont_drawstring(tex_font, perf_temp, 16, gScreenHeight - 32, 0xffffffff, 1);
 	}
 
     int perf_i;
@@ -520,13 +520,34 @@ int rect_line_collide(float x0a, float y0a, float x1a, float y1a,
     return 1;
 }
 
+void setcolor(int color)
+{
+	glColor4f(((color >> 16) & 0xff) / 256.0f,
+		((color >> 8) & 0xff) / 256.0f,
+		((color >> 0) & 0xff) / 256.0f,
+		((color >> 24) & 0xff) / 256.0f);
+}
+
+void drawcircle(float aX, float aY, float aRx, float aRy, int color)
+{
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	setcolor(color);
+
+	int d = floor(max(aRx, aRy)) + 5;
+	int i;
+	glBegin(GL_TRIANGLE_FAN);
+	for (i = 0; i < d; i++)
+		glVertex2f(sin(2 * M_PI * i / (float)d) * aRx + aX, cos(2 * M_PI * i / (float)d) * aRy + aY);
+	glEnd();
+}
+
 
 void drawrect(float x, float y, float w, float h, int color)
 {
-    glColor4f(((color >> 16) & 0xff) / 256.0f,
-              ((color >> 8) & 0xff) / 256.0f,
-              ((color >> 0) & 0xff) / 256.0f,
-              ((color >> 24) & 0xff) / 256.0f);
+	setcolor(color);
     glBegin(GL_TRIANGLE_STRIP);
       glVertex2f(x,y);
       glVertex2f(x,y+h);
@@ -539,10 +560,7 @@ void drawtexturedrect(int tex, float x, float y, float w, float h, int color)
 {
     glBindTexture(GL_TEXTURE_2D, tex);
     glEnable(GL_TEXTURE_2D);
-    glColor4f(((color >> 16) & 0xff) / 256.0f,
-              ((color >> 8) & 0xff) / 256.0f,
-              ((color >> 0) & 0xff) / 256.0f,
-              ((color >> 24) & 0xff) / 256.0f);
+	setcolor(color);
     glBegin(GL_TRIANGLE_STRIP);
       glTexCoord2f(0,0);
       glVertex2f(x,y);
@@ -577,16 +595,13 @@ void quickfont_drawchar(int ch, float x, float y, float w, float h)
 	glVertex2f(x + w, y + h);
 }
 
-void quickfont_drawstring(int tex, char * string, float x, float y, int color, float alpha, float size)
+void quickfont_drawstring(int tex, char * string, float x, float y, int color,  float size)
 {
     glBindTexture(GL_TEXTURE_2D, tex);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(((color >> 16) & 0xff) / 256.0f,
-              ((color >> 8) & 0xff) / 256.0f,
-              ((color >> 0) & 0xff) / 256.0f,
-              alpha);
+	setcolor(color);
 	glBegin(GL_TRIANGLE_STRIP);
 	while (*string)
     {

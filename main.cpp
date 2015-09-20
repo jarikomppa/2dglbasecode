@@ -179,6 +179,8 @@ static void draw_screen_ingame()
 
     drawsprite(tex_logo,64,64,128,128);
 
+	drawcircle(DESIRED_WINDOW_WIDTH / 2, DESIRED_WINDOW_HEIGHT / 2, DESIRED_WINDOW_HEIGHT / 4, DESIRED_WINDOW_HEIGHT / 4, 0xff334455);
+
     ////////////////////////////////////
 	// Let's do some 3d..
     ////////////////////////////////////
@@ -213,7 +215,7 @@ static void draw_screen_ingame()
 
     char temp[200];
     sprintf(temp, "%d %d %d %d", gScreenWidth, gScreenHeight, gUIState.mousex, gUIState.mousey);
-    quickfont_drawstring(tex_font, temp, 50,400,0xffffff,1,1);
+    quickfont_drawstring(tex_font, temp, 50,400,0xffffffff,1);
 
     imgui_prepare();
 
@@ -272,7 +274,7 @@ static void draw_screen_ingame()
 	render_perfcounters(tex_font);
 
 #endif
-    SDL_Delay(10);
+    SDL_Delay(1);
 	SDL_GL_SwapBuffers();
 }
 
