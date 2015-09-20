@@ -23,14 +23,6 @@
 #include <math.h>
 #include "toolkit.h"
 
-#ifdef USE_BASIC_POPUPS
-Popup popup[MAX_POPUPS];
-#endif
-
-#ifdef USE_BASIC_PARTICLES
-Particle particle[MAX_PARTICLES];
-#endif
-
 struct texpair
 {
     const char *mFilename;
@@ -45,8 +37,38 @@ UIState gUIState = {0,0,0,0,0,0,0,0,0,0};
 texpair * gTextureStore = NULL;
 int gTextureStoreSize = 0;
 
+WELL512::WELL512()
+{
+	mIndex = 0;
+	srand(0);
+}
 
-static void render_perfcounters(int tex_font, ACFont * font)
+void WELL512::srand(int aSeed)
+{
+	int i;
+	for (i = 0; i < 16; i++)
+	{
+		mState[i] = 0x7457edb7 + (i + 1) * aSeed;
+	}
+}
+
+unsigned long WELL512::rand()
+{
+	unsigned long a, b, c, d;
+	a = mState[mIndex];
+	c = mState[(mIndex + 13) & 15];
+	b = a ^ c ^ (a << 16) ^ (c << 15);
+	c = mState[(mIndex + 9) & 15];
+	c ^= (c >> 11);
+	a = mState[mIndex] = b ^ c;
+	d = a ^ ((a << 5) & 0xDA442D24UL);
+	mIndex = (mIndex + 15) & 15;
+	a = mState[mIndex];
+	mState[mIndex] = a ^ b ^ d ^ (a << 2) ^ (b << 18) ^ (c << 28);
+	return mState[mIndex];
+}
+
+void render_perfcounters(int tex_font)
 {
 	int tick = SDL_GetTicks();
 #define PERF_FRAMES 50
@@ -69,13 +91,6 @@ static void render_perfcounters(int tex_font, ACFont * font)
 	{
 		quickfont_drawstring(tex_font, perf_temp, 16, gScreenHeight - 32, 0xffffff, 1, 1);
 	}
-	else
-	{
-		if (font)
-		{
-			font->drawstring(perf_temp, 16, gScreenHeight - 32, 0xffffffff, 16);
-		}
-	}
 
     int perf_i;
     for (perf_i = 0; perf_i < PERF_FRAMES - 1; perf_i++)
@@ -85,20 +100,6 @@ static void render_perfcounters(int tex_font, ACFont * font)
     }
 }
 
-void render_perfcounters(int tex_font)
-{
-	render_perfcounters(tex_font, 0);
-}
-
-void render_perfcounters(ACFont *font)
-{
-	render_perfcounters(0, font);
-}
-
-void render_perfcounters(ACFont &font)
-{
-	render_perfcounters(0, &font);
-}
 
 void set2d()
 {

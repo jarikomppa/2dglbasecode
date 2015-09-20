@@ -241,9 +241,11 @@ static void draw_screen_ingame()
     }
 
     static int slidervalue = 25;
-    imgui_slider(GEN_ID,760,50,24,400,0xff3f3f7f,0xff7f7f9f,0xff9f9fff, 100,slidervalue, 10, 1);
+	slidervalue *= 10;
+    imgui_slider(GEN_ID,860,50,24,400,0xff3f3f7f,0xff7f7f9f,0xff9f9fff, 120*10,slidervalue, 10, 1);
+	slidervalue /= 10;
     
-    imgui_textfield(GEN_ID,fn,100,450,600,44,textfield_text,100,0xff3f3f7f,0xff7f7f9f,0xff9f9fff,0xff000000);
+    imgui_textfield(GEN_ID,fn,200,450,600,44,textfield_text,100,0xff3f3f7f,0xff7f7f9f,0xff9f9fff,0xff000000);
 
     imgui_finish();
 
@@ -260,9 +262,9 @@ static void draw_screen_ingame()
 	fn.wordwrap(textfield_dup, 400, slidervalue*1.1 + 10);
 
 	fn.stringmetrics(textfield_dup, m, slidervalue * 1.1 + 10);
-	fn.drawstring(textfield_dup, (800 - m.mWidth) / 2, (600 - m.mHeight) / 2, 0x7f000000, slidervalue*1.1 + 10);
+	fn.drawstring(textfield_dup, (DESIRED_WINDOW_WIDTH - m.mWidth) / 2, (DESIRED_WINDOW_HEIGHT - m.mHeight) / 2, 0x7f000000, slidervalue*1.1 + 10);
 	fn.stringmetrics(textfield_dup, m, slidervalue + 10);
-	fn.drawstring(textfield_dup, (800 - m.mWidth) / 2, (600 - m.mHeight) / 2, 0x7fffffff, slidervalue + 10);
+	fn.drawstring(textfield_dup, (DESIRED_WINDOW_WIDTH - m.mWidth) / 2, (DESIRED_WINDOW_HEIGHT - m.mHeight) / 2, 0x7fffffff, slidervalue + 10);
     
 
 #ifdef USE_PERFCOUNTERS

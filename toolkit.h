@@ -28,9 +28,9 @@
 //// 
 
 // For windowed mode
-#define DESIRED_WINDOW_WIDTH 800
+#define DESIRED_WINDOW_WIDTH (1920/2)
 // For windowed mode
-#define DESIRED_WINDOW_HEIGHT 600
+#define DESIRED_WINDOW_HEIGHT (1080/2)
 // Desired aspect ratio. 640x480 = 4/3. Comment out to use whatever the desktop is set.
 #define DESIRED_ASPECT ((float)(DESIRED_WINDOW_WIDTH)/(float)(DESIRED_WINDOW_HEIGHT))
 
@@ -156,36 +156,9 @@ public:
 	unsigned long mState[16];
 	unsigned int mIndex;
 
-	WELL512()
-	{
-		mIndex = 0;
-		srand(0);
-	}
-
-	void srand(int aSeed)
-	{
-		int i;
-		for (i = 0; i < 16; i++)
-		{
-			mState[i] = 0x7457edb7 + (i + 1) * aSeed;
-		}
-	}
-
-	unsigned long rand()
-	{
-		unsigned long a, b, c, d;
-		a  = mState[mIndex];
-		c  = mState[(mIndex + 13) & 15];
-		b  = a ^ c ^ (a << 16) ^ (c << 15);
-		c  = mState[(mIndex + 9) & 15];
-		c ^= (c >> 11);
-		a = mState[mIndex] = b ^ c; 
-		d = a ^ ((a << 5) & 0xDA442D24UL);
-		mIndex = (mIndex + 15) & 15;
-		a = mState[mIndex];
-		mState[mIndex] = a ^ b ^ d ^ (a << 2) ^ (b << 18) ^ (c << 28);
-		return mState[mIndex];
-	}
+	WELL512();
+	void srand(int aSeed);
+	unsigned long rand();
 };
 
 extern WELL512 gVisualRand, gPhysicsRand;
