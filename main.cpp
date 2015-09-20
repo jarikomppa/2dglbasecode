@@ -222,7 +222,7 @@ static void draw_screen_ingame()
 		for (j = 0; j < 64; j++)
 		{
 			temp[0] = i * 64 + j;
-			quickfont_drawstring(tex_font, temp, DESIRED_WINDOW_WIDTH - 8 * 64 + j * 8, DESIRED_WINDOW_HEIGHT - 8 * 4 + i * 8);
+			quickfont_drawstring(tex_font, temp, DESIRED_WINDOW_WIDTH - 8 * 64 + j * 8, DESIRED_WINDOW_HEIGHT - 8 * 4 + i * 8, 0xffff0000 | ((i * 64 + j) << 8));
 		}
 
     imgui_prepare();
