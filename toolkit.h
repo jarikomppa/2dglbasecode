@@ -169,6 +169,7 @@ public:
 
 extern WELL512 gVisualRand, gPhysicsRand;
 extern int gScreenWidth, gScreenHeight;
+extern SDL_Window *gSDLWindow;
 
 void initvideo(int argc);
 void set2d();

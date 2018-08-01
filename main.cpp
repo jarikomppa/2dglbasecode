@@ -92,8 +92,8 @@ void process_events()
 			gUIState.keyentered = event.key.keysym.sym;
 			gUIState.keymod = event.key.keysym.mod;
 			// if key is ASCII, accept it as character input
-			if ((event.key.keysym.unicode & 0xFF80) == 0)
-				gUIState.keychar = event.key.keysym.unicode & 0x7f;				
+			if (event.key.keysym.sym < 256)
+				gUIState.keychar = event.key.keysym.sym & 0x7f;				
             break;
         case SDL_KEYUP:
             handle_key(event.key.keysym.sym, 0);
@@ -129,9 +129,9 @@ void process_events()
             SDL_Quit();
             exit(0);
             break;
-        case SDL_VIDEORESIZE:
-            gScreenWidth = event.resize.w;
-            gScreenHeight = event.resize.h;
+        case SDL_WINDOWEVENT_RESIZED:
+            gScreenWidth = event.window.data1;
+            gScreenHeight = event.window.data2;
             initvideo(0);
             break;
 
@@ -285,7 +285,7 @@ static void draw_screen_ingame()
 
 #endif
     SDL_Delay(1);
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(gSDLWindow);
 }
 
 
@@ -312,16 +312,11 @@ int main (int argc, char** args)
     tex_logo = load_texture("spherebase.png");
     tex_font = load_texture("fona.png");
 
-	// For imgui - Enable keyboard repeat to make sliders more tolerable
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-	// For imgui - Enable keyboard UNICODE processing for the text field.
-	SDL_EnableUNICODE(1);
-
     // load a font..
     fn.load("oswald-regular-120.fnt");
     
     // set window title
-    SDL_WM_SetCaption(TITLE " - http://iki.fi/sol/", NULL);
+    SDL_SetWindowTitle(gSDLWindow, TITLE " - http://iki.fi/sol/");
 
     // hide cursor
     SDL_ShowCursor(0);

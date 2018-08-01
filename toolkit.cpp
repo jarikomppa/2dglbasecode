@@ -38,6 +38,7 @@ struct texpair
 
 int gScreenWidth = 0;
 int gScreenHeight = 0;
+SDL_Window *gSDLWindow;
 WELL512 gVisualRand, gPhysicsRand;
 UIState gUIState = {0,0,0,0,0,0,0,0,0,0};
 texpair * gTextureStore = NULL;
@@ -124,18 +125,10 @@ void set2d()
 
 void initvideo(int argc)
 {
-    const SDL_VideoInfo *info = NULL;
     int bpp = 0;
     int flags = 0;
-
-    info = SDL_GetVideoInfo();
-
-    if (!info) 
-    {
-        fprintf(stderr, "Video query failed: %s\n", SDL_GetError());
-        SDL_Quit();
-        exit(0);
-    }
+	SDL_Rect info;
+	SDL_GetDisplayBounds(0, &info);
 
 #ifdef _DEBUG
     int fsflag = 0;
@@ -151,10 +144,9 @@ void initvideo(int argc)
 
     if (fsflag) 
     {
-        gScreenWidth = info->current_w;
-        gScreenHeight = info->current_h;
-        bpp = info->vfmt->BitsPerPixel;
-        flags = SDL_OPENGL | SDL_FULLSCREEN;
+        gScreenWidth = info.w;
+        gScreenHeight = info.h;
+        flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN;
     }
     else
     {
@@ -167,26 +159,37 @@ void initvideo(int argc)
             gScreenWidth = DESIRED_WINDOW_WIDTH;
             gScreenHeight = DESIRED_WINDOW_HEIGHT;
         }
-        bpp = info->vfmt->BitsPerPixel;
-        flags = SDL_OPENGL;
+        flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 #ifdef RESIZABLE_WINDOW
-        flags |= SDL_RESIZABLE;
+        flags |= SDL_WINDOW_RESIZABLE;
 #endif
     }
 
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    if (SDL_SetVideoMode(gScreenWidth, gScreenHeight, bpp, flags) == 0) 
+	gSDLWindow = SDL_CreateWindow(
+		"",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		gScreenWidth,
+		gScreenHeight,
+		flags);
+
+    if (gSDLWindow == 0) 
     {
         fprintf( stderr, "Video mode set failed: %s\n", SDL_GetError());
         SDL_Quit();
         exit(0);
     }
-   
+
+	SDL_GLContext glcontext = SDL_GL_CreateContext(gSDLWindow);
+
+	SDL_GL_SetSwapInterval(1);
+
     if(!gladLoadGL()) {
         printf("Something went wrong!\n");
         exit(-1);
